@@ -312,33 +312,6 @@ resource "kubernetes_deployment" "accounting_frontend_web_prod" {
     kubernetes_config_map.accounting_frontend_web_prod]
 }
 
-# Added so we can reference the pod IP for Gatus healthchecks
-
-# resource "null_resource" "get_accounting_frontend_web_prod_pod_ips" {
-#   provisioner "local-exec" {
-#     interpreter = ["/bin/bash", "-c"]
-#     command = <<-EOT
-#       gcloud container clusters get-credentials gke-frontend-cluster --zone=${var.zone} --project=${var.project_id}
-#       kubectl --context=gke_${var.project_id}_${var.zone}_gke-frontend-cluster get pods -n prod -l app=accounting-frontend-web-prod -o jsonpath='{.items[*].status.podIP}' > accounting_frontend_web_prod_pod_ips.txt
-#     EOT
-#   }
-  
-#   depends_on = [
-#     google_container_cluster.gke_frontend_cluster,
-#     kubernetes_deployment.accounting_frontend_web_prod
-#   ]
-  
-#   triggers = {
-#     cluster_endpoint = google_container_cluster.gke_frontend_cluster.endpoint,
-#     deployment_id = kubernetes_deployment.accounting_frontend_web_prod.metadata[0].uid
-#   }
-# }
-
-# data "local_file" "accounting_frontend_web_prod_pod_ips" {
-#   filename   = "accounting_frontend_web_prod_pod_ips.txt"
-#   depends_on = [null_resource.get_accounting_frontend_web_prod_pod_ips]
-# }
-
 
 resource "kubernetes_deployment" "accounting_frontend_web_dev" {
   provider = kubernetes.frontend
@@ -430,33 +403,6 @@ resource "kubernetes_deployment" "accounting_frontend_web_dev" {
     kubernetes_config_map.accounting_frontend_web_dev]
 }
 
-# # Added so we can reference the pod IP for Gatus healthchecks
-
-# resource "null_resource" "get_accounting_frontend_web_dev_pod_ips" {
-#   provisioner "local-exec" {
-#     interpreter = ["/bin/bash", "-c"]
-#     command = <<-EOT
-#       gcloud container clusters get-credentials gke-frontend-cluster --zone=${var.zone} --project=${var.project_id}
-#       kubectl --context=gke_${var.project_id}_${var.zone}_gke-frontend-cluster get pods -n dev -l app=accounting-frontend-web-dev -o jsonpath='{.items[*].status.podIP}' > accounting_frontend_web_prod_pod_ips.txt
-#     EOT
-#   }
-  
-#   depends_on = [
-#     google_container_cluster.gke_frontend_cluster,
-#     kubernetes_deployment.accounting_frontend_web_dev
-#   ]
-  
-#   triggers = {
-#     cluster_endpoint = google_container_cluster.gke_frontend_cluster.endpoint,
-#     deployment_id = kubernetes_deployment.accounting_frontend_web_dev.metadata[0].uid
-#   }
-# }
-
-# data "local_file" "accounting_frontend_web_dev_pod_ips" {
-#   filename   = "accounting_frontend_web_dev_pod_ips.txt"
-#   depends_on = [null_resource.get_accounting_frontend_web_dev_pod_ips]
-# }
-
 
 resource "kubernetes_deployment" "marketing_frontend_web_prod" {
   provider = kubernetes.frontend
@@ -547,33 +493,6 @@ resource "kubernetes_deployment" "marketing_frontend_web_prod" {
     kubernetes_namespace.frontend_prod,
     kubernetes_config_map.marketing_frontend_web_prod]
 }
-
-# Added so we can reference the pod IP for Gatus healthchecks
-
-# resource "null_resource" "get_marketing_frontend_web_prod_pod_ips" {
-#   provisioner "local-exec" {
-#     interpreter = ["/bin/bash", "-c"]
-#     command = <<-EOT
-#       gcloud container clusters get-credentials gke-frontend-cluster --zone=${var.zone} --project=${var.project_id}
-#       kubectl --context=gke_${var.project_id}_${var.zone}_gke-frontend-cluster get pods -n prod -l app=marketing-frontend-web-prod -o jsonpath='{.items[*].status.podIP}' > accounting_frontend_web_prod_pod_ips.txt
-#     EOT
-#   }
-  
-#   depends_on = [
-#     google_container_cluster.gke_frontend_cluster,
-#     kubernetes_deployment.marketing_frontend_web_prod
-#   ]
-  
-#   triggers = {
-#     cluster_endpoint = google_container_cluster.gke_frontend_cluster.endpoint,
-#     deployment_id = kubernetes_deployment.marketing_frontend_web_prod.metadata[0].uid
-#   }
-# }
-
-# data "local_file" "marketing_frontend_web_prod_pod_ips" {
-#   filename   = "marketing_frontend_web_prod_pod_ips.txt"
-#   depends_on = [null_resource.get_marketing_frontend_web_prod_pod_ips]
-# }
 
 
 resource "kubernetes_deployment" "marketing_frontend_web_dev" {

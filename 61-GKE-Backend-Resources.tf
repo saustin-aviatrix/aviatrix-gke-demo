@@ -306,33 +306,6 @@ resource "kubernetes_deployment" "accounting_backend_web_prod" {
     kubernetes_config_map.accounting_backend_web_prod]
 }
 
-# Added so we can reference the pod IP for Gatus healthchecks
-
-# resource "null_resource" "get_accounting_backend_web_prod_pod_ips" {
-#   provisioner "local-exec" {
-#     interpreter = ["PowerShell", "-Command"]
-#     command = <<-EOT
-#       gcloud container clusters get-credentials gke-backend-cluster --zone=${var.zone} --project=${var.project_id}
-#       kubectl --context=gke_${var.project_id}_${var.zone}_gke-backend-cluster get pods -n prod -l app=accounting-backend-web-prod -o jsonpath='{.items[*].status.podIP}' | Out-File -Encoding ASCII -NoNewline accounting_backend_web_prod_pod_ips.txt
-#     EOT
-#   }
-  
-#   depends_on = [
-#     google_container_cluster.gke_backend_cluster,
-#     kubernetes_deployment.accounting_backend_web_prod
-#   ]
-  
-#   triggers = {
-#     cluster_endpoint = google_container_cluster.gke_backend_cluster.endpoint,
-#     deployment_id = kubernetes_deployment.accounting_backend_web_prod.metadata[0].uid
-#   }
-# }
-
-# data "local_file" "accounting_backend_web_prod_pod_ips" {
-#   filename   = "accounting_backend_web_prod_pod_ips.txt"
-#   depends_on = [null_resource.get_accounting_backend_web_prod_pod_ips]
-# }
-
 
 resource "kubernetes_deployment" "accounting_backend_web_dev" {
   provider = kubernetes.backend
@@ -424,33 +397,6 @@ resource "kubernetes_deployment" "accounting_backend_web_dev" {
     kubernetes_config_map.accounting_backend_web_dev
     ]
 }
-
-# Added so we can reference the pod IP for Gatus healthchecks
-
-# resource "null_resource" "get_accounting_backend_web_dev_pod_ips" {
-#   provisioner "local-exec" {
-#     interpreter = ["PowerShell", "-Command"]
-#     command = <<-EOT
-#       gcloud container clusters get-credentials gke-backend-cluster --zone=${var.zone} --project=${var.project_id}
-#       kubectl --context=gke_${var.project_id}_${var.zone}_gke-backend-cluster get pods -n dev -l app=accounting-backend-web-dev -o jsonpath='{.items[*].status.podIP}' | Out-File -Encoding ASCII -NoNewline accounting_backend_web_dev_pod_ips.txt
-#     EOT
-#   }
-  
-#   depends_on = [
-#     google_container_cluster.gke_backend_cluster,
-#     kubernetes_deployment.accounting_backend_web_dev
-#   ]
-  
-#   triggers = {
-#     cluster_endpoint = google_container_cluster.gke_backend_cluster.endpoint,
-#     deployment_id = kubernetes_deployment.accounting_backend_web_dev.metadata[0].uid
-#   }
-# }
-
-# data "local_file" "accounting_backend_web_dev_pod_ips" {
-#   filename   = "accounting_backend_web_dev_pod_ips.txt"
-#   depends_on = [null_resource.get_accounting_backend_web_dev_pod_ips]
-# }
 
 
 resource "kubernetes_deployment" "marketing_backend_web_prod" {

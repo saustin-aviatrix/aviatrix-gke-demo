@@ -1,74 +1,141 @@
 
 # Aviatrix Kubernetes Firewall Demo with GKE
 
-# Prerequisites
+This repository demonstrates Aviatrix Kubernetes firewall capabilities using Google Kubernetes Engine (GKE) clusters with Custom Resource Definitions (CRDs) for webgroup policies.
 
-gcloud cli
-bash shell (needed for the finializer script - if using VS Code on Windows, use gitbash instead of powershell)
-google account onboarded to your controller
-8.1 controller - required for CRD webgroup policies
-Feature flags for k8s and k8s_dcf_policies enabled
-terraform.tfvars file with your specific variables added - Check terraform.tfvars.example
+## Prerequisites
 
-# Before doing a plan/apply, get authenticated with google:
+Before getting started, ensure you have the following:
 
+- **gcloud CLI** - Google Cloud command-line interface
+- **bash shell** - Required for the finalizer script (if using VS Code on Windows, use Git Bash instead of PowerShell)
+- **Google account** - Must be onboarded to your Aviatrix controller
+- **Aviatrix Controller 8.1+** - Required for CRD webgroup policies
+- **Feature flags enabled** - Both `k8s` and `k8s_dcf_policies` must be enabled
+- **terraform.tfvars file** - Configure with your specific variables (see `terraform.tfvars.example`)
+
+## Initial Setup
+
+### 1. Authenticate with Google Cloud
+
+```bash
 gcloud auth login
-
-# To run kubectl commands, first get credentialed to the cluster you want to manage:
-
+2. Connect to your GKE cluster
+bash
+Copy code
 gcloud container clusters get-credentials gke-frontend-cluster --zone=us-west1-a
+Common kubectl Commands
+Check cluster status and resources:
 
-# Common commands to check
-
+bash
+Copy code
+# View all namespaces
 kubectl get namespaces
 
+# View all pods across namespaces
 kubectl get pods -A
 
+# View pods in specific namespace
 kubectl get pods -n prod
-
-# To test CRD webgroup policies you first need to enable by pushing this:
-
+Setting Up CRD Webgroup Policies
+1. Apply the Aviatrix CRD
+bash
+Copy code
+# Ensure you're connected to the correct cluster
 gcloud container clusters get-credentials gke-frontend-cluster --zone=us-west1-a
 
+# Apply the CRD
 kubectl apply -f networking.aviatrix.com_webgrouppolicies.yaml
-
-# You can check if it was already applied by checking the api-resources on the cluster
-
+2. Verify CRD Installation
+bash
+Copy code
 kubectl api-resources | grep aviatrix
+Expected output:
 
+bash
+Copy code
 webgrouppolicies                                        networking.aviatrix.com/v1alpha1   true         WebgroupPolicy
+3. Create and Manage Webgroup Policies
+bash
+Copy code
+# Review the policy before applying
+cat frontend-prod-egress.yaml
 
-# After that has been applied you can now push the webgroup policy, open it first to view the rules
-
+# Create the webgroup policy
 kubectl create -f frontend-prod-egress.yaml
 
-# Immediately after the create, it will show up in CoPilot under SmartGroups and Webgroups. You can then make updates to the policy and see them reflected immediately in CoPilot. Recommend just adding or removing a domain to keep it simple.
-
+# Update existing policy (after making changes)
 kubectl replace -f frontend-prod-egress.yaml
 
-# Check applied policies
-
+# View all applied policies
 kubectl get webgrouppolicies -A
+Note: After applying webgroup policies, update rule 100 in the Aviatrix controller to change the webgroup from "datadog" to the newly created webgroup. This allows you to see the impact of CRD updates on Gatus health checks.
 
-# Since the webgroup policies are applied after running the Terraform, you need to go into rule 100 and change the webgroup from datadog to the one that shows after you create the CRD. That way you can update the CRD and see the impact to traffic on the Gatus healthchecks.
+Demonstrating Service Scaling
+To showcase how Aviatrix reacts to services scaling:
 
-# For showing how we react to services scaling up and down, you can spin up a replica pod. First go into CoPilot, groups, and click on the Frontend Prod Namespace smartgroup. Show that there is only 1 accounting pod showing. Then run this kubectl command to increase the replicas from 1 to 2:
-
+1. Check Current Pod Count
+bash
+Copy code
 kubectl get pods -n prod
+2. Scale the Application
+bash
+Copy code
+# Scale from 1 to 2 replicas
 kubectl scale deployment accounting-frontend-web-prod --replicas=2 -n prod
+
+# Verify scaling
 kubectl get pods -n prod
+3. View in CoPilot
+Navigate to CoPilot → Groups
+Click on "Frontend Prod Namespace" smartgroup
+Refresh the page to see the additional pod
+Modifying DCF Rules
+To make changes to Distributed Cloud Firewall (DCF) rules:
 
-# Now go back in to CoPilot, refresh the page and you will see a 2nd accounting pod show up in the list.
+Comment out the policies section in 110-Aviatrix-DCF.tf
+Run terraform apply to remove existing rules
+Uncomment and modify the policies as needed
+Run terraform apply again to apply the updated rules
+Debugging and Testing
+For custom testing within clusters or namespaces, use this debug container:
 
-# If you want to do any changes to the DCF rules, you need to remove them all first, make changes and then push them back. Easiest way to do this is to comment out the policies section in 110-Aviatrix-DCF.tf and do a terraform apply. This will remove the rules, you can then uncomment, make any changes and do another apply to add them back.
-
-# If you want to do any custom tests from one of the clusters or namespaces, this container is very helpful, as the containers running in this lab dont have shells/tools
-
+bash
+Copy code
 kubectl run debug-frontend-prod -n prod --image=nicolaka/netshoot --restart=Never -it -- bash
+This provides a container with networking tools for troubleshooting.
 
-# When doing a destroy, there are a few things to be aware of. First, you need to remove the custom webgroup from the rule 100 policy, or you will get an error due to. Also, havent figured out a way to fix an issue with prod/dev namespaces getting stuck with finalizers. You will see if get stuck waiting on deleting the namespaces and you can run this script to clear them.
+Cleanup and Destroy
+Important Notes
+When destroying the infrastructure:
 
+Remove custom webgroups from rule 100 policy first to avoid errors
+Handle stuck namespaces - prod/dev namespaces may get stuck with finalizers
+Cleanup Stuck Namespaces
+If namespaces get stuck in "Terminating" status during destruction:
+
+bash
+Copy code
 ./cleanup-finalizers.sh
+This script will clear the finalizers and allow proper namespace deletion.
+
+Troubleshooting
+Common Issues
+Namespace stuck in Terminating: Run the cleanup-finalizers script
+CRD not found: Ensure the CRD was applied successfully before creating policies
+Authentication errors: Verify gcloud auth login was successful
+Cluster connection issues: Confirm the correct cluster name and zone
+Verification Commands
+bash
+Copy code
+# Check cluster connection
+kubectl cluster-info
+
+# Verify CRD installation
+kubectl api-resources | grep aviatrix
+
+# Check policy status
+kubectl get webgrouppolicies -A
 
 
 

@@ -7,8 +7,8 @@ spec:
   allowedDomains:
   - "api.datadoghq.com"
   - "aws.amazon.com"
-  - "kubernetes.io"
-  - "ipv4.icanhazip.com"
+#  - "kubernetes.io"
+#  - "ipv4.icanhazip.com"
   selector:
     matchLabels: {}
     service: ""

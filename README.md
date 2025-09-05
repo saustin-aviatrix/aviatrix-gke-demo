@@ -18,6 +18,11 @@
     ```bash
     gcloud auth login
     ```
+
+### Once you have built the environment
+
+1. Go into CoPilot DCF and check the last 2 rules. These are denies, but left as permits so it doesnt block traffic if you have other rules in place. You can check the monitor logs to see if anything is hitting those rules that you dont expect. Once you have confirmed, change those 2 rules to deny.
+
 2.  Get credentials for the cluster you want to manage. Replace `gke-frontend-cluster` and `us-west1-a` with your cluster's name and zone.
     ```bash
     gcloud container clusters get-credentials gke-frontend-cluster --zone=us-west1-a

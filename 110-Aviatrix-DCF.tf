@@ -681,7 +681,7 @@ resource "aviatrix_distributed_firewalling_policy_list" "GKE-Demo-Ruleset" {
   policies {
     name     = "Deny - Catch All"
     priority = 1000
-    action   = "DENY"
+    action   = "PERMIT"
     protocol = "ANY"
     src_smart_groups = [
       "def000ad-0000-0000-0000-000000000000"

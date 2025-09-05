@@ -87,7 +87,7 @@ kubectl get webgrouppolicies -A
 
 #### Important Note on CRD Policies
 
-Since the webgroup policies are applied after running Terraform, you need to go into **rule 100** and change the webgroup from `datadog` to the one that appears after you create the CRD. This way, you can update the CRD and see the impact on traffic via Gatus health checks.
+Since the webgroup policies are applied after running Terraform, you need to go into **rule 100** and change the webgroup from `datadog` to the one that appears after you create the CRD `frontend-prod-egress.yaml`. This way, you can update the CRD and see the impact on reachable domains via Gatus health checks.
 
 -----
 
@@ -112,7 +112,15 @@ To show how Aviatrix reacts to services scaling, you can spin up a replica pod.
 ### Modifying Distributed Cloud Firewall (DCF) Rules
 
 If you need to make changes to the DCF rules, you must remove them first, make your changes, and then push them back.
-The easiest way to do this is to **comment out the `policies` section** in `110-Aviatrix-DCF.tf` and run a `terraform apply`. This will remove the rules. You can then uncomment the section, make any necessary changes, and run another `terraform apply` to add them back.
+The easiest way to do this is to follow this process:
+
+1. Comment out the relevant policy block(s) in 110-Aviatrix-DCF.tf.
+
+2. Run terraform apply to remove the old rules.
+
+3. Uncomment the block(s), make your changes, and save the file.
+
+4. Run terraform apply again to add the new rules.
 
 -----
 

@@ -1,0 +1,8 @@
+project_id              = ""
+region                  = ""
+zone                    = ""
+aviatrix_controller_ip  = ""
+aviatrix_username       = ""
+gcp_account_name        = ""
+environment             = ""
+aviatrix_password       = ""

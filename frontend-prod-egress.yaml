@@ -1,0 +1,14 @@
+apiVersion: networking.aviatrix.com/v1alpha1
+kind: WebgroupPolicy
+metadata:
+  name: frontend-prod-egress
+  namespace: prod
+spec:
+  allowedDomains:
+  - "api.datadoghq.com"
+  - "aws.amazon.com"
+  - "kubernetes.io"
+  - "ipv4.icanhazip.com"
+  selector:
+    matchLabels: {}
+    service: ""

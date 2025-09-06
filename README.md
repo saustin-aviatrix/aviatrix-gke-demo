@@ -150,4 +150,4 @@ When running `terraform destroy`, be aware of a few things:
     ./cleanup-finalizers.sh
     ```
 
-(https://github.com/saustin-aviatrix/aviatrix-gke-demo/blob/main/GKE-Demo-Diagram.png?raw=true)
+!(https://github.com/saustin-aviatrix/aviatrix-gke-demo/blob/main/GKE-Demo-Diagram.png?raw=true)

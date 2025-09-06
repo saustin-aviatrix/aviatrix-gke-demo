@@ -1,9 +1,5 @@
 # GKE Clusters and compute
 
-# Commenting out, this only uses existing account, doesnt create if not there
-# data "google_service_account" "gke_service_account" {
-#   account_id = "gke-service-account"
-# }
 
 locals {
   service_account_exists = can(data.google_service_account.existing_gke_service_account.email)
@@ -65,26 +61,6 @@ resource "google_container_cluster" "gke_frontend_cluster" {
     enable_private_endpoint = false  # Set to true if you want fully private
     master_ipv4_cidr_block  = "172.16.0.0/28"
   }
-
-  # CRITICAL: Add master authorized networks
-  # master_authorized_networks_config {
-  #   cidr_blocks {
-  #     cidr_block   = "10.0.0.0/8"
-  #     display_name = "Private Networks"
-  #   }
-  #   cidr_blocks {
-  #     cidr_block   = "${chomp(data.http.myip.response_body)}/32"
-  #     display_name = "My Current IP"
-  #   }
-  #   cidr_blocks {
-  #     cidr_block   = "35.235.240.0/20"
-  #     display_name = "Google Cloud Shell"
-  #   }
-  #   cidr_blocks {
-  #     cidr_block = "0.0.0.0/0"
-  #     display_name = "Temp allow for controller access"
-  #   }
-  # }
 
   ip_allocation_policy {
     cluster_secondary_range_name  = "gke-frontend-pods"
@@ -172,22 +148,6 @@ resource "google_container_cluster" "gke_backend_cluster" {
     enable_private_endpoint = false  # Set to true if you want fully private
     master_ipv4_cidr_block  = "172.16.1.0/28"
   }
-
-  # CRITICAL: Add master authorized networks
-  # master_authorized_networks_config {
-  #   cidr_blocks {
-  #     cidr_block   = "10.0.0.0/8"
-  #     display_name = "Private Networks"
-  #   }
-  #   cidr_blocks {
-  #     cidr_block   = "${chomp(data.http.myip.response_body)}/32"
-  #     display_name = "My Current IP"
-  #   }
-  #   cidr_blocks {
-  #     cidr_block   = "35.235.240.0/20"
-  #     display_name = "Google Cloud Shell"
-  #   }
-  # }
 
   ip_allocation_policy {
     cluster_secondary_range_name  = "gke-backend-pods"

@@ -149,3 +149,5 @@ When running `terraform destroy`, be aware of a few things:
     ```bash
     ./cleanup-finalizers.sh
     ```
+
+(https://github.com/saustin-aviatrix/aviatrix-gke-demo/blob/main/GKE-Demo-Diagram.png?raw=true)
